@@ -38,6 +38,8 @@ def read_json(path, user_name):
 def create(path, user_name):
     for folders in os.listdir(path):
         folder_path = os.path.join(path, folders)
+        if not os.path.isdir(folder_path):
+            continue
         for files_folders in os.listdir(folder_path):
             if (files_folders.endswith('.json')):
                 full_path = os.path.join(folder_path, files_folders)
@@ -71,12 +73,25 @@ if uploaded_file is not None:
             zip_ref.extractall(extract_folder)
 
         st.info("📂 Đang đọc các file JSON trong thư mục inbox...")
-        create(os.path.join(extract_folder, "inbox"), user_name)
-        st.session_state.data_loaded = True   #  đánh dấu đã load
-        st.success("Đã đọc xong tin nhắn 🎉")
-        time.sleep(0.5)
-        # Xoá thư mục tạm sau khi đọc xong
-        shutil.rmtree(extract_folder)
+
+        inbox_path = None
+        for root, dirs, files in os.walk(extract_folder):
+            if "inbox" in dirs:
+                inbox_path = os.path.join(root, "inbox")
+                break
+
+        if inbox_path is None:
+            st.error("❌ Không tìm thấy thư mục 'inbox' trong file ZIP. Hãy nén đúng thư mục 'messages/inbox' của Facebook.")
+        else:
+            try:
+                create(inbox_path, user_name)
+                st.session_state.data_loaded = True
+                st.success("Đã đọc xong tin nhắn 🎉")
+                time.sleep(0.5)
+            except Exception as e:
+                st.error(f"❌ Lỗi khi đọc dữ liệu: {str(e)}")
+            finally:
+                shutil.rmtree(extract_folder)
 
 
 st.header("Bước 3: Chọn kiểu biểu đồ để hiển thị")
