@@ -122,7 +122,7 @@ if st.button("📈 Hiển thị biểu đồ"):
 
                 ax.patch.set_edgecolor('black')   # màu khung
                 ax.patch.set_linewidth(1)         # độ dày khung
-                
+                plt.title(f"Năm {year}", fontsize=14, color='royalblue', fontweight='bold')
                 plt.xlabel("Số lần sử dụng", fontsize=11, color='darkred', fontweight='bold')
                 plt.ylabel("Từ sử dụng", fontsize=11, color='darkgreen', fontweight='bold')
                 plt.tight_layout()
